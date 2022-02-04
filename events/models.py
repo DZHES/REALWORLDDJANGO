@@ -15,7 +15,7 @@ class Category(models.Model):
     def display_event_count(self):
         return self.events.count()
 
-
+    display_event_count.short_description = 'Количество событий'
 
 class Feature(models.Model):
     title = models.CharField(max_length=100, default='', verbose_name='Свойство события')
@@ -46,6 +46,8 @@ class Event(models.Model):
     def display_enroll_count(self):
         return self.enrolls.count()
 
+    display_enroll_count.short_description = 'Количество записей'
+
     def display_places_left(self):
         count, total = self.display_enroll_count(), self.participants_number
         if count <= round(total / 2):
@@ -55,6 +57,8 @@ class Event(models.Model):
                 return f'{total-count}(<50%)'
             else:
                 return f'{0}(sold-out)'
+
+    display_places_left.short_description = 'Осталось мест'
 
 class Enroll(models.Model):
     user = models.ForeignKey(User, related_name='enrolls', null=True, on_delete=models.CASCADE)
