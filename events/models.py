@@ -12,6 +12,11 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+    def display_event_count(self):
+        return self.events.count()
+
+
+
 class Feature(models.Model):
     title = models.CharField(max_length=100, default='', verbose_name='Свойство события')
 
@@ -38,9 +43,22 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+    def display_enroll_count(self):
+        return self.enrolls.count()
+
+    def display_places_left(self):
+        count, total = self.display_enroll_count(), self.participants_number
+        if count <= round(total / 2):
+            return f'{total-count}(<=50%)'
+        elif count > round(total / 2):
+            if (total - count) != 0:
+                return f'{total-count}(<50%)'
+            else:
+                return f'{0}(sold-out)'
+
 class Enroll(models.Model):
     user = models.ForeignKey(User, related_name='enrolls', null=True, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, related_name='events', null=True, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, related_name='enrolls', null=True, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True, verbose_name='Дата записи')
 
 
@@ -49,7 +67,7 @@ class Enroll(models.Model):
         verbose_name = 'Запись на событие'
 
     def __str__(self):
-        return self.user
+        return f'{self.created}'
 
 class Review(models.Model):
     user = models.ForeignKey(User, related_name='reviews', null=True, on_delete=models.CASCADE)
@@ -64,4 +82,4 @@ class Review(models.Model):
         verbose_name = 'Отзыв на событие'
 
     def __str__(self):
-        return  self.user
+        return  f'{self.user}'
