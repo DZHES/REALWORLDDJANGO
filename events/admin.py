@@ -3,6 +3,38 @@ from events import models
 
 # Register your models here.
 
+class FullEnrollsEventsFilter(admin.SimpleListFilter):
+    title = 'Заполненность'
+    parameter_name = 'full_enrolls_events_filter'
+
+    def lookups(self, request, model_admin):
+        filter_list = (
+            ('0', '<= 50%'),
+            ('1', '> 50%'),
+            ('2', 'sold-out')
+        )
+        return filter_list
+
+    def queryset(self, request, queryset):
+        list_id = []
+        if self.value() == '0':
+            for event in queryset:
+                if event.display_enroll_count() <= round(event.participants_number / 2):
+                    list_id.append(event.id)
+            return queryset.filter(id__in=list_id)
+        elif self.value() == '1':
+            for event in queryset:
+                if event.display_enroll_count() > round(event.participants_number / 2) and (event.participants_number - event.display_enroll_count()) != 0:
+                    list_id.append(event.id)
+            return queryset.filter(id__in=list_id)
+        elif self.value() == '2':
+            for event in queryset:
+                if event.participants_number - event.display_enroll_count() == 0:
+                    list_id.append(event.id)
+            return queryset.filter(id__in=list_id)
+        return queryset
+
+
 @admin.register(models.Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ['title',
@@ -15,6 +47,7 @@ class EventAdmin(admin.ModelAdmin):
                     ]
     ordering = ['date_start']
     search_fields = ['title']
+    list_filter = [FullEnrollsEventsFilter, 'category', 'features']
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
