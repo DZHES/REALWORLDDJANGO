@@ -51,7 +51,7 @@ class Event(models.Model):
     def display_places_left(self):
         count, total = self.display_enroll_count(), self.participants_number
         if count <= round(total / 2):
-            return f'{total-count}(<=50%)'
+            return f'{total-count} (<= 50%)'
         elif count > round(total / 2):
             if (total - count) != 0:
                 return f'{total-count}(<50%)'
