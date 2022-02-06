@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+import events.models
 from events import models
 
 # Register your models here.
@@ -34,6 +36,14 @@ class FullEnrollsEventsFilter(admin.SimpleListFilter):
             return queryset.filter(id__in=list_id)
         return queryset
 
+class ReviewsInstanceInline(admin.TabularInline):
+    model = events.models.Review
+    readonly_fields = ('id_review', 'user', 'event', 'rate', 'text', 'created', 'updated')
+    extra = 0
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 @admin.register(models.Event)
 class EventAdmin(admin.ModelAdmin):
@@ -48,6 +58,12 @@ class EventAdmin(admin.ModelAdmin):
     ordering = ['date_start']
     search_fields = ['title']
     list_filter = [FullEnrollsEventsFilter, 'category', 'features']
+    readonly_fields = ['display_enroll_count', 'display_places_left', 'id']
+    fields = ['id', 'title', 'description', 'date_start', 'participants_number', 'is_private', 'category', 'features', 'display_enroll_count', 'display_places_left']
+    inlines = [ReviewsInstanceInline, ]
+    filter_horizontal = ['features']
+    list_select_related = ['category']
+
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -64,10 +80,13 @@ class EnrollAdmin(admin.ModelAdmin):
     readonly_fields = ('created',)
     list_display = ['id', 'user', 'event']
     list_display_links = ['id', 'user', 'event']
+    list_select_related = ['event']
 
 @admin.register(models.Review)
 class ReviewAdmin(admin.ModelAdmin):
-    readonly_fields = ('created', 'updated',)
+    readonly_fields = ('id', 'created', 'updated')
     list_display = ['id', 'user', 'event']
     list_display_links = ['id', 'user', 'event']
-    list_filter = ['created', 'updated']
+    list_filter = ['created', 'event']
+    fields = ['id', 'created', 'updated']
+    list_select_related = ['user', 'event']

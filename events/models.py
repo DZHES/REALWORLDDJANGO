@@ -86,4 +86,9 @@ class Review(models.Model):
         verbose_name = 'Отзыв на событие'
 
     def __str__(self):
-        return  f'{self.user}'
+        return  f'{self.user} - {self.event}'
+
+    def id_review(self):
+        return f'{self.id}'
+
+    id_review.short_description = 'id'
