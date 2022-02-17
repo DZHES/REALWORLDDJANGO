@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.conf import settings
+from django.urls import reverse
 
 class Category(models.Model):
     title = models.CharField(max_length=90, default='', verbose_name='Категория')
@@ -35,6 +36,7 @@ class Event(models.Model):
     is_private = models.BooleanField(default=False, verbose_name='Частное')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, related_name='events')
     features = models.ManyToManyField(Feature)
+    logo = models.ImageField(upload_to='events/event/', null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'События'
@@ -59,6 +61,22 @@ class Event(models.Model):
                 return f'{0}(sold-out)'
 
     display_places_left.short_description = 'Осталось мест'
+
+    def get_absolute_url(self):
+        return reverse('events:event_detail', args=[str(self.pk)])
+
+    @property
+    def rate(self):
+        count_reviews = self.reviews.count()
+        sum_rate = 0
+        for review in self.reviews.all():
+            sum_rate += review.rate
+        return round(sum_rate / count_reviews, 1)
+
+    @property
+    def logo_url(self):
+        return self.logo.url if self.logo else f'{settings.STATIC_URL}images/svg-icon/event.svg'
+
 
 class Enroll(models.Model):
     user = models.ForeignKey(User, related_name='enrolls', null=True, on_delete=models.CASCADE)
