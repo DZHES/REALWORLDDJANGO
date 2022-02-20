@@ -83,9 +83,15 @@
                                             <h4 data-test="enroll_count">
                                                 {{ event.display_enroll_count }} из {{ event.participants_number }}
                                             </h4>
-                                            <p data-test="places_left">
-                                                осталось мест: {{ display_places_left}}
-                                            </p>
+                                            {% if display_places_left != '0' %}
+                                                <p data-test="places_left">
+                                                    осталось мест: {{ display_places_left}}
+                                                </p>
+                                            {% else %}
+                                                <p data-test="places_left">
+                                                    осталось мест: мест нет
+                                                </p>
+                                            {% endif %}
                                             <div class="progress" style="height: 5px;">
                                                 <div data-test="progressbar"
                                                      class="progress-bar bg-success"
