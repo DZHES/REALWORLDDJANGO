@@ -24,7 +24,7 @@ def create_review(request):
     event_id = request.POST.get('event_id', '')
     rate = int(request.POST.get('rate', 0) or 0)
     text = request.POST.get('text', '')
-    new_event = Event.objects.get(pk=int(event_id))
+
 
     data = {
         'ok' : True,
@@ -34,11 +34,12 @@ def create_review(request):
         'created': datetime.date.today().strftime('%d.%m.%Y'),
         'user_name': request.user.__str__(),
     }
-
-    if data['rate'] == '' or data['text'] == '':
-        data['msg'] = 'Оценка и текст отзыва - обязательные поля'
+    if event_id == '' or event_id == '0':
         data['ok'] = False
+        data['msg'] = 'Такого события нет'
         return JsonResponse(data)
+
+    new_event = Event.objects.get(pk=int(event_id))
 
     if not request.user.is_authenticated:
         data['msg'] = 'Отзывы могут оставлять только зарегистрированные пользователи'
@@ -47,6 +48,11 @@ def create_review(request):
 
     if Review.objects.filter(user=request.user, event=new_event).exists():
         data['msg'] = 'Вы уже отправляли отзыв к этому событию'
+        data['ok'] = False
+        return JsonResponse(data)
+
+    if data['rate'] == '' or data['text'] == '':
+        data['msg'] = 'Оценка и текст отзыва - обязательные поля'
         data['ok'] = False
         return JsonResponse(data)
 
