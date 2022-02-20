@@ -36,8 +36,6 @@
                                 <div class="col-lg-6 col-xl-7">
                                     {% if event.is_private %}
                                         <p data-test="is_private" class="badge bg-dark">Private</p>
-                                    {% else %}
-                                        <p data-test="is_private" class="badge bg-dark"></p>
                                     {% endif %}
                                     <h2 data-test="event_title">{{ event.title }}</h2>
                                     <p data-test="event_rate" class="badge bg-warning">{{ event.rate }} / 5</p>
