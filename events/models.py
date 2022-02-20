@@ -69,6 +69,8 @@ class Event(models.Model):
     def rate(self):
         count_reviews = self.reviews.count()
         sum_rate = 0
+        if count_reviews == 0:
+            return 0
         for review in self.reviews.all():
             sum_rate += review.rate
         return round(sum_rate / count_reviews, 1)
