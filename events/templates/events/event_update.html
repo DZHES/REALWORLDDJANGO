@@ -1,0 +1,214 @@
+{% extends "__base.html" %}
+{% load static %}
+{% block title %}Real World Django - создание события{{ event.title }}{% endblock %}
+{% block content %}
+    <!-- Start LEFT_MENU -->
+{% include 'snippets/__left_menu.html' %}
+    <!-- End LEFT_MENU -->
+
+    <!-- Start MAIN_CONTAINER -->
+    <div class="rightbar">
+
+        <!-- Start TOP_BAR -->
+        <div class="container-fluid bg-white py-3">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto text-center ms-4">
+                    <h4>Real World Django</h4>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="col-auto text-center me-4">
+                    <a href="#" class="btn btn-outline-primary">+ Добавить событие</a>
+                </div>
+                {% else %}
+                <div class="col-auto text-center me-4">
+                    <a href="#" class="btn btn-outline-primary">Войти</a>
+                    <a href="#" class="btn btn-primary">Регистрация</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- End TOP_BAR -->
+
+        <!-- Start CONTAINER_BAR -->
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col-lg-5 col-xl-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Событие</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                                 aria-orientation="vertical">
+                                <a class="nav-link mb-2 active" id="v-pills-edit-tab" data-bs-toggle="pill"
+                                   href="#v-pills-edit" role="tab" aria-controls="v-pills-edit"
+                                   aria-selected="true">
+                                    <i class="bi bi-pencil-square"></i>Редактировать
+                                </a>
+                                <a class="nav-link mb-2" id="v-pills-participants-tab" data-bs-toggle="pill"
+                                   href="#v-pills-participants" role="tab" aria-controls="v-pills-participants"
+                                   aria-selected="false">
+                                    <i class="bi bi-people-fill"></i>Участники
+                                </a>
+                                <a class="nav-link mb-2" id="v-pills-review-tab" data-bs-toggle="pill"
+                                   href="#v-pills-review" role="tab" aria-controls="v-pills-review"
+                                   aria-selected="false">
+                                    <i class="bi bi-chat-left-dots"></i>Отзывы
+                                </a>
+                                <a class="nav-link" id="v-pills-danger-zone-tab" data-bs-toggle="pill"
+                                   href="#v-pills-danger-zone" role="tab" aria-controls="v-pills-danger-zone"
+                                   aria-selected="false">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>Danger zone
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-xl-9">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade active show" id="v-pills-edit" role="tabpanel"
+                             aria-labelledby="v-pills-edit-tab">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0" data-test="header">
+                                        Создание события
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <img src="{% static "images/svg-icon/event.svg" %}" class="img-fluid" alt="profile"
+                                         style="width: 250px">
+                                </div>
+                            </div>
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Основная информация</h5>
+                                </div>
+                                <div class="card-body">
+                                {{ form.non_fields_errors }}
+                                    <form action="." method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {% for field in form %}
+                                        <div class="mb-3">
+                                            {{ field.label_tag }}{{ field }}
+                                        </div>
+                                            {% if field.errors %}
+                                                {{ field.errors }}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <button type="submit" class="btn btn-primary">
+                                            Сохранить
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="v-pills-participants" role="tabpanel"
+                             aria-labelledby="v-pills-participants-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Участники</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Имя</th>
+                                                <th>Email</th>
+                                                <th>Оценка</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <th data-test="enroll_counter">1</th>
+                                                <td data-test="enroll_user">Иван Петров</td>
+                                                <td data-test="enroll_email">ivan.petrov@mail.ru</td>
+                                                <td data-test="enroll_rate">5</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="v-pills-review" role="tabpanel"
+                             aria-labelledby="v-pills-review-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Отзывы</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Start Review item -->
+                                    <h5 class="me-2" data-test="review_user">
+                                        Денис
+                                        <span class="badge bg-warning" data-test="review_rate">
+                                            5
+                                        </span>
+                                    </h5>
+                                    <p class="my-3" data-test="review_text">Все понравилось. Круто повеселились!</p>
+                                    <p class="mb-4" data-test="review_created">01.01.2001</p>
+                                    <!-- End Review item -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="v-pills-danger-zone" role="tabpanel"
+                             aria-labelledby="v-pills-danger-zone-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Danger zone</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row justify-content-center">
+                                        <div class="col-lg-6 col-xl-4">
+                                            <div class="text-center my-5">
+                                                <img src="assets/images/svg-icon/cancel.svg" class="img-fluid mb-5"
+                                                     alt="logout">
+                                                <h2 class="text-success">Удалить событие?</h2>
+                                                <p class="my-4">
+                                                    Вы находитесь в опасной зоне. Вы уверены что хотите
+                                                    удалить событие безвозвратно?
+                                                </p>
+                                                <div class="button-list">
+                                                    <form action="" method="post">
+                                                        <button type="submit" class="btn btn-danger">
+                                                            Да, удалить
+                                                        </button>
+                                                        <a href="event_detail.html" class="btn btn-success">
+                                                            Нет, не удалять
+                                                        </a>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End CONTAINER_BAR -->
+
+        <!-- Start FOOTER -->
+        <div style="height: 70px"></div>
+        <div class="footerbar">
+            <footer class="footer">
+                <p class="mb-0">© Pumpskill. Real World Django</p>
+            </footer>
+        </div>
+        <!-- End FOOTER -->
+
+    </div>
+    <!-- End MAIN_CONTAINER -->
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
+{% endblock %}

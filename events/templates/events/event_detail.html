@@ -50,8 +50,10 @@
                                         дата: <strong>{{ event.date_start|date:'d.m.Y' }} в {{ event.date_start|date:'H:i' }}</strong>
                                     </p>
                                     <div class="button-list mt-5 mb-5 d-flex">
-                                        <form action="#" method="post" class="me-2">
+                                        <form action="{% url 'events:enroll_create' %}" method="post" class="me-2">
                                             {% if display_places_left != '0' %}
+                                                {% csrf_token %}
+                                                {{ enroll_add }}
                                                 <button data-test="enroll"
                                                         type="submit"
                                                         class="btn btn-success">
