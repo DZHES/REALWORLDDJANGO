@@ -1,6 +1,6 @@
 {% extends "__base.html" %}
 {% load static %}
-{% block title %}Real World Django - Редактирование события {{ event.title }}{% endblock %}
+{% block title %}Real World Django - создание события{{ event.title }}{% endblock %}
 {% block content %}
     <!-- Start LEFT_MENU -->
 {% include 'snippets/__left_menu.html' %}
@@ -55,7 +55,7 @@
                             <div class="card mb-3">
                                 <div class="card-header">
                                     <h5 class="card-title mb-0" data-test="header">
-                                        {{ event.title }}
+                                        Создание события
                                     </h5>
                                 </div>
                                 <div class="card-body text-center">
@@ -68,16 +68,16 @@
                                     <h5 class="card-title mb-0">Основная информация</h5>
                                 </div>
                                 <div class="card-body">
-                                    {{ form.non_field_errors }}
+                                {{ form.non_fields_errors }}
                                     <form action="." method="post" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         {% for field in form %}
                                         <div class="mb-3">
-                                                {{ field.label_tag }}{{ field }}
+                                            {{ field.label_tag }}{{ field }}
                                         </div>
-                                        {% if field.errors %}
+                                            {% if field.errors %}
                                                 {{ field.errors }}
-                                        {% endif %}
+                                            {% endif %}
                                         {% endfor %}
                                         <button type="submit" class="btn btn-primary">
                                             Сохранить
@@ -103,22 +103,14 @@
                                                 <th>Оценка</th>
                                             </tr>
                                             </thead>
-                                            {% for enroll in event.enrolls.all %}
                                             <tbody>
                                             <tr>
-                                                <th data-test="enroll_counter">{{ forloop.counter }}</th>
-                                                <td data-test="enroll_user">{{ enroll.user }}</td>
-                                                <td data-test="enroll_email"></td>
-                                                {% for review in event.reviews.all %}
-                                                    {% if enroll.user in list_review and enroll.user == review.user %}
-                                                        <td data-test="enroll_rate">{{ review.rate }}</td>
-                                                    {% elif enroll.user not in list_review  and review == event.reviews.all.first %}
-                                                        <td data-test="enroll_rate">0</td>
-                                                    {% endif %}
-                                                {% endfor %}
+                                                <th data-test="enroll_counter">1</th>
+                                                <td data-test="enroll_user">Иван Петров</td>
+                                                <td data-test="enroll_email">ivan.petrov@mail.ru</td>
+                                                <td data-test="enroll_rate">5</td>
                                             </tr>
                                             </tbody>
-                                            {% endfor %}
                                         </table>
                                     </div>
                                 </div>
@@ -132,16 +124,14 @@
                                 </div>
                                 <div class="card-body">
                                     <!-- Start Review item -->
-                                    {% for review in event.reviews.all %}
                                     <h5 class="me-2" data-test="review_user">
-                                        {{ review.user }}
+                                        Денис
                                         <span class="badge bg-warning" data-test="review_rate">
-                                            {{ review.rate }}
+                                            5
                                         </span>
                                     </h5>
-                                    <p class="my-3" data-test="review_text">{{ review.text }}</p>
-                                    <p class="mb-4" data-test="review_created">{{ review.created }}</p>
-                                    {% endfor %}
+                                    <p class="my-3" data-test="review_text">Все понравилось. Круто повеселились!</p>
+                                    <p class="mb-4" data-test="review_created">01.01.2001</p>
                                     <!-- End Review item -->
                                 </div>
                             </div>
@@ -164,12 +154,11 @@
                                                     удалить событие безвозвратно?
                                                 </p>
                                                 <div class="button-list">
-                                                    <form action="{% url 'events:event_delete' event.pk %}" method="post">
-                                                        {% csrf_token %}
+                                                    <form action="" method="post">
                                                         <button type="submit" class="btn btn-danger">
                                                             Да, удалить
                                                         </button>
-                                                        <a href="{% url 'events:event_list' %}" class="btn btn-success">
+                                                        <a href="event_detail.html" class="btn btn-success">
                                                             Нет, не удалять
                                                         </a>
                                                     </form>

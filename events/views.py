@@ -8,9 +8,9 @@ from django.views.decorators.http import require_POST
 #импортируем базовый класс DetailView для представления детальной страницы события
 #импортируем базовый класс CreateView для создания нового объекта
 #импортируем базовый класс UpdateView для редактирования объекта
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 #импортируем форму для создания объекта
-from events.forms import EventCreationForm, EnrollCreationForm
+from events.forms import EventCreationForm, EnrollCreationForm, EventUpdateForm
 #импортируем reverse_lazy для переопределения переадресации
 from django.urls import reverse_lazy
 #импортируеи messages для вывода сообщений
@@ -25,20 +25,25 @@ class EventListView(ListView):
         queryset = super().get_queryset()
         return queryset.order_by("-pk")
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['heading'] = 'События'
+        return context
+
 class EventDetailView(DetailView):
     model = Event
     template_name = 'events/event_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['display_places_left'] = self.object.display_places_left()[0]
+        context['display_places_left'] = self.object.places_left()
         context['enroll_add'] = EnrollCreationForm(initial={'user' : self.request.user, 'event' : self.object,
                                                              'created' : datetime.date.today().strftime('%d.%m.%Y')})
         return context
 
 class EventCreateView(CreateView):
     model = Event
-    template_name = 'events/event_update.html'
+    template_name = 'events/event_create.html'
     form_class = EventCreationForm #создаем модель формы EventCreationForm
     success_url = reverse_lazy("events:event_list") #при успешном создании объекта будет переадресация на список событий
 
@@ -57,40 +62,67 @@ class EventCreateView(CreateView):
 
 class EnrollCreationView(CreateView):
     model = Enroll
-    form_class = EventCreationForm
+    form_class = EnrollCreationForm
+
+    def post(self, request, *args, **kwargs):  # запись на  событие будет доступно только для залогиненных пользователей
+        if not request.user.is_authenticated:
+                return HttpResponseForbidden('Недостаточно прав')
+        return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return self.object.event.get_absolute_url()
 
     def form_valid(self, form):
         messages.success(self.request, 'Вы записаны на событие')
         return super().form_valid(form)
 
-    def get_success_url(self):
-        return self.object.event.get_absolute_url()
+    def form_invalid(self, form):
 
+        messages.error(self.request, form.non_field_errors())
+        event = form.cleaned_data.get('event', None)
+        if not event:
+            event = get_object_or_404(Event, pk=form.data.get('event'))
+        redirect_url = event.get_absolute_url() if event else reverse_lazy('events:event_list')
+        return HttpResponseRedirect(redirect_url)
 
+class EventUpdateView(UpdateView):
+    model = Event
+    template_name = 'events/event_update.html'
+    form_class = EventUpdateForm
 
-# class EnrollAddToEventView(CreateView):
-#     model = Enroll
-#     form_class = EnrollAddToEventForm
-#
-#     def post(self, request, *args, **kwargs):  #запись на  событие будет доступно только для залогиненных пользователей
-#         if not request.user.is_authenticated:
-#             return HttpResponseForbidden('Недостаточно прав')
-#         return super().get(request, *args, **kwargs)
-#
-#     def get_success_url(self):
-#         return self.object.event.get_absolute_url()
-#
-#     def form_valid(self, form):
-#         messages.success(self.request, 'Вы записаны на событие')
-#         return super().form_valid(form)
-#
-#     def form_invalid(self, form):
-#         messages.error(self.request, form.non_field_errors())
-#         event = form.cleaned_data.get('event', None)
-#         if not event:
-#             event = get_object_or_404(Event, pk=form.data.get('event'))
-#         redirect_url = event.get_absolute_url() if event else reverse_lazy('events:event_list')
-#         return HttpResponseRedirect(redirect_url)
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+                return HttpResponseForbidden('Недостаточно прав')
+        return super().post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden('Недостаточно прав')
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['list_review'] = [review.user for review in self.object.reviews.all()]
+        return context
+
+class EventDeleteView(DeleteView):
+    model = Event
+    template_name = 'events/event_update.html'
+    success_url = reverse_lazy('events:event_list')
+
+    def delete(self, request, *args, **kwargs):
+        result = super().delete(request, *args, **kwargs)
+        return result
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+                return HttpResponseForbidden('Недостаточно прав')
+        return super().post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden('Недостаточно прав')
+        return super().get(request, *args, **kwargs)
 
 @require_POST
 def create_review(request):

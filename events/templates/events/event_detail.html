@@ -6,23 +6,9 @@
 {% include 'snippets/__left_menu.html' %}
     <!-- Start MAIN_CONTAINER -->
     <div class="rightbar">
- <div class="container-fluid bg-white py-3">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto text-center ms-4">
-                    <h4>Real World Django</h4>
-                </div>
-                {% if user.is_authenticated %}
-                <div class="col-auto text-center me-4">
-                    <a href="#" class="btn btn-outline-primary">+ Добавить событие</a>
-                </div>
-                {% else %}
-                <div class="col-auto text-center me-4">
-                    <a href="#" class="btn btn-outline-primary">Войти</a>
-                    <a href="#" class="btn btn-primary">Регистрация</a>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+         <!-- Start TOP_BAR -->
+{% include 'snippets/__top_bar.html' %}
+        <!-- End TOP_BAR -->
         <!-- Start CONTAINER_BAR -->
         <div class="container-fluid mt-3">
             <div class="row">
@@ -51,7 +37,7 @@
                                     </p>
                                     <div class="button-list mt-5 mb-5 d-flex">
                                         <form action="{% url 'events:enroll_create' %}" method="post" class="me-2">
-                                            {% if display_places_left != '0' %}
+                                            {% if display_places_left != 0 %}
                                                 {% csrf_token %}
                                                 {{ enroll_add }}
                                                 <button data-test="enroll"
@@ -68,7 +54,7 @@
                                                 </button>
                                             {% endif %}
                                         </form>
-                                        <a href="#" class="btn btn-primary me-2">
+                                        <a href="{{ event.get_update_url }}" class="btn btn-primary me-2">
                                             <i class="bi bi-pencil"></i>Изменить
                                         </a>
                                         <button type="button" class="btn btn-outline-danger"
@@ -85,7 +71,7 @@
                                             <h4 data-test="enroll_count">
                                                 {{ event.display_enroll_count }} из {{ event.participants_number }}
                                             </h4>
-                                            {% if display_places_left != '0' %}
+                                            {% if display_places_left != 0 %}
                                                 <p data-test="places_left">
                                                     осталось мест: {{ display_places_left}}
                                                 </p>
@@ -171,12 +157,7 @@
         <!-- End CONTAINER_BAR -->
 
         <!-- Start FOOTER -->
-        <div style="height: 70px"></div>
-        <div class="footerbar">
-            <footer class="footer">
-                <p class="mb-0">© Pumpskill. Real World Django</p>
-            </footer>
-        </div>
+{% include 'snippets/__footer.html' %}
         <!-- End FOOTER -->
 
     </div>

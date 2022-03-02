@@ -19,23 +19,20 @@ class EnrollCreationForm(forms.ModelForm):
         model = Enroll
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget = forms.HiddenInput()
 
+    def clean(self):
+        cleaned_data = super().clean()
+        user = cleaned_data.get('user')
+        event = cleaned_data.get('event')
 
-# class EnrollAddToEventForm(forms.ModelForm):
-#     class Meta:
-#         model = Enroll
-#         fields = '__all__'
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         for field in self.fields:
-#             self.fields[field].widget = forms.HiddenInput()
-#
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         user = cleaned_data.get('user')
-#         event = cleaned_data.get('event')
-#
-#         if Enroll.objects.filter(user=user, event=event).exists():
-#             raise forms.ValidationError(f'Вы уже записаны на это событие')
+        if Enroll.objects.filter(user=user, event=event).exists():
+            raise forms.ValidationError(f'Вы уже записаны на это событие')
 
+class EventUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = '__all__'

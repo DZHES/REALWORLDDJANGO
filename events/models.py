@@ -62,8 +62,24 @@ class Event(models.Model):
 
     display_places_left.short_description = 'Осталось мест'
 
+    def places_left(self):
+        count, total = self.display_enroll_count(), self.participants_number
+        if count <= round(total / 2):
+            return total - count
+        elif count > round(total / 2):
+            if (total - count) != 0:
+                return total - count
+            else:
+                return 0
+
     def get_absolute_url(self):
         return reverse('events:event_detail', args=[str(self.pk)])
+
+    def get_update_url(self):
+        return reverse('events:event_update', args=[str(self.pk)])
+
+    def get_delete_url(self):
+        return reverse('events:event_create', args=[str(self.pk)])
 
     @property
     def rate(self):
