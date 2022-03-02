@@ -1,27 +1,30 @@
 import datetime
 from django.shortcuts import render, get_object_or_404
 from events.models import Event, Review, Enroll
-#импортируем HttpResponseForbidden для вывода ошибки
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.views.decorators.http import require_POST
-#импортируем базовый класс ListView для представления списка событий
-#импортируем базовый класс DetailView для представления детальной страницы события
-#импортируем базовый класс CreateView для создания нового объекта
-#импортируем базовый класс UpdateView для редактирования объекта
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-#импортируем форму для создания объекта
 from events.forms import EventCreationForm, EnrollCreationForm, EventUpdateForm
-#импортируем reverse_lazy для переопределения переадресации
 from django.urls import reverse_lazy
-#импортируеи messages для вывода сообщений
 from django.contrib import messages
 
-class EventListView(ListView):
-    model = Event  #Передаем модель Event
-    template_name = 'events/event_list.html' #задаём шаблон в атрибуте template_name
-    paginate_by = 9    #Добавляем пагинацию для вывода 9 событий на странице
+class LoginRequiredMixin:
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+                return HttpResponseForbidden('Недостаточно прав')
+        return super().post(request, *args, **kwargs)
 
-    def get_queryset(self):      #добавляем сортировку списка объектов по убыванию
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden('Недостаточно прав')
+        return super().get(request, *args, **kwargs)
+
+class EventListView(ListView):
+    model = Event
+    template_name = 'events/event_list.html'
+    paginate_by = 9
+
+    def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.order_by("-pk")
 
@@ -41,43 +44,23 @@ class EventDetailView(DetailView):
                                                              'created' : datetime.date.today().strftime('%d.%m.%Y')})
         return context
 
-class EventCreateView(CreateView):
+class EventCreateView(LoginRequiredMixin, CreateView):
     model = Event
     template_name = 'events/event_update.html'
-    form_class = EventCreationForm #создаем модель формы EventCreationForm
-    success_url = reverse_lazy("events:event_list") #при успешном создании объекта будет переадресация на список событий
+    form_class = EventCreationForm
+    success_url = reverse_lazy("events:event_list")
 
-    def post(self, request, *args, **kwargs):  # запись на  событие будет доступно только для залогиненных пользователей
-        if not request.user.is_authenticated:
-                return HttpResponseForbidden('Недостаточно прав')
-        return super().post(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):  #создание события будет доступно только для залогиненных пользователей
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden('Недостаточно прав')
-        return super().get(request, *args, **kwargs)
-
-    def form_valid(self, form): #вывод сообщения если валидация прошла успешно
+    def form_valid(self, form):
         messages.success(self.request, 'Новое событие создано успешно')
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, form.non_field_errors()) #вывод сообщения если валидация прошла неудачно
+        messages.error(self.request, form.non_field_errors())
         return super().form_invalid(form)
 
-class EnrollCreationView(CreateView):
+class EnrollCreationView(LoginRequiredMixin, CreateView):
     model = Enroll
     form_class = EnrollCreationForm
-
-    # def get(self, request, *args, **kwargs):  #создание события будет доступно только для залогиненных пользователей
-    #     if not request.user.is_authenticated:
-    #         return HttpResponseForbidden('Недостаточно прав')
-    #     return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):  # запись на  событие будет доступно только для залогиненных пользователей
-        if not request.user.is_authenticated:
-                return HttpResponseForbidden('Недостаточно прав')
-        return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
         return self.object.event.get_absolute_url()
@@ -94,20 +77,10 @@ class EnrollCreationView(CreateView):
         redirect_url = event.get_absolute_url() if event else reverse_lazy('events:event_list')
         return HttpResponseRedirect(redirect_url)
 
-class EventUpdateView(UpdateView):
+class EventUpdateView(LoginRequiredMixin, UpdateView):
     model = Event
     template_name = 'events/event_update.html'
     form_class = EventUpdateForm
-
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-                return HttpResponseForbidden('Недостаточно прав')
-        return super().post(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden('Недостаточно прав')
-        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -122,7 +95,7 @@ class EventUpdateView(UpdateView):
         messages.error(self.request, form.non_field_errors())
         return super().form_invalid(form)
 
-class EventDeleteView(DeleteView):
+class EventDeleteView(LoginRequiredMixin, DeleteView):
     model = Event
     template_name = 'events/event_update.html'
     success_url = reverse_lazy('events:event_list')
@@ -130,16 +103,6 @@ class EventDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)
         return result
-
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-                return HttpResponseForbidden('Недостаточно прав')
-        return super().post(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden('Недостаточно прав')
-        return super().get(request, *args, **kwargs)
 
 @require_POST
 def create_review(request):
