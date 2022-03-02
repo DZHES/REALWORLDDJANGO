@@ -111,7 +111,7 @@ class EventUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, f'Событие {form.cleaned_data["title"]} создано успешно')
+        messages.success(self.request, f'Событие {form.cleaned_data["title"]} измененно успешно')
         return super().form_valid(form)
 
     def form_invalid(self, form):

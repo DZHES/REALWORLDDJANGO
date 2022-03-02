@@ -14,6 +14,14 @@ class EventCreationForm(forms.ModelForm):  #Создаём модельную ф
         super().__init__(*args, **kwargs)
         self.fields['date_start'].widget.attrs.update({'class' : 'form-control'})
 
+    def clean(self):
+        cleaned_data = super().clean()
+        title = cleaned_data.get('title')
+
+        if Event.objects.filter(title=title).exists():
+            raise forms.ValidationError(f'Событие с таким названием уже имеется')
+        return cleaned_data
+
 class EnrollCreationForm(forms.ModelForm):
     class Meta:
         model = Enroll
@@ -31,6 +39,7 @@ class EnrollCreationForm(forms.ModelForm):
 
         if Enroll.objects.filter(user=user, event=event).exists():
             raise forms.ValidationError(f'Вы уже записаны на это событие')
+        return cleaned_data
 
 class EventUpdateForm(forms.ModelForm):
     class Meta:
