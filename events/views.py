@@ -69,6 +69,11 @@ class EnrollCreationView(CreateView):
     model = Enroll
     form_class = EnrollCreationForm
 
+    def get(self, request, *args, **kwargs):  #создание события будет доступно только для залогиненных пользователей
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden('Недостаточно прав')
+        return super().get(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):  # запись на  событие будет доступно только для залогиненных пользователей
         if not request.user.is_authenticated:
                 return HttpResponseForbidden('Недостаточно прав')
@@ -82,7 +87,6 @@ class EnrollCreationView(CreateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-
         messages.error(self.request, form.non_field_errors())
         event = form.cleaned_data.get('event', None)
         if not event:
