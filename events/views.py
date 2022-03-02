@@ -43,7 +43,7 @@ class EventDetailView(DetailView):
 
 class EventCreateView(CreateView):
     model = Event
-    template_name = 'events/event_create.html'
+    template_name = 'events/event_update.html'
     form_class = EventCreationForm #создаем модель формы EventCreationForm
     success_url = reverse_lazy("events:event_list") #при успешном создании объекта будет переадресация на список событий
 
