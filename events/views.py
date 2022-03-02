@@ -47,6 +47,11 @@ class EventCreateView(CreateView):
     form_class = EventCreationForm #создаем модель формы EventCreationForm
     success_url = reverse_lazy("events:event_list") #при успешном создании объекта будет переадресация на список событий
 
+    def post(self, request, *args, **kwargs):  # запись на  событие будет доступно только для залогиненных пользователей
+        if not request.user.is_authenticated:
+                return HttpResponseForbidden('Недостаточно прав')
+        return super().post(request, *args, **kwargs)
+
     def get(self, request, *args, **kwargs):  #создание события будет доступно только для залогиненных пользователей
         if not request.user.is_authenticated:
             return HttpResponseForbidden('Недостаточно прав')
@@ -58,7 +63,7 @@ class EventCreateView(CreateView):
 
     def form_invalid(self, form):
         messages.error(self.request, form.non_field_errors()) #вывод сообщения если валидация прошла неудачно
-        return super().form_valid(form)
+        return super().form_invalid(form)
 
 class EnrollCreationView(CreateView):
     model = Enroll
@@ -104,6 +109,14 @@ class EventUpdateView(UpdateView):
         context = super().get_context_data()
         context['list_review'] = [review.user for review in self.object.reviews.all()]
         return context
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Событие {form.cleaned_data["title"]} создано успешно')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, form.non_field_errors())
+        return super().form_invalid(form)
 
 class EventDeleteView(DeleteView):
     model = Event

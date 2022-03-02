@@ -79,7 +79,7 @@ class Event(models.Model):
         return reverse('events:event_update', args=[str(self.pk)])
 
     def get_delete_url(self):
-        return reverse('events:event_create', args=[str(self.pk)])
+        return reverse('events:event_delete', args=[str(self.pk)])
 
     @property
     def rate(self):
