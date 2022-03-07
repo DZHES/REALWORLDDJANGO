@@ -1,14 +1,14 @@
 {% extends "__base.html" %}
+{% load static %}
 {% block title %}Real World Django - События{% endblock %}
 {% block content %}
 <div class="vertical-layout">
-
-{% include 'snippets/__left_menu.html' %}
+    {% include 'snippets/__left_menu.html' %}
     <!-- Start MAIN_CONTAINER -->
     <div class="rightbar">
 
         <!-- Start TOP_BAR -->
-{% include 'snippets/__top_bar.html' %}
+        {% include 'snippets/__top_bar.html' %}
         <!-- End TOP_BAR -->
 
         <!-- Start CONTAINER_BAR -->
@@ -124,4 +124,5 @@
     <!-- End MAIN_CONTAINER -->
 
 </div>
+
 {% endblock %}
