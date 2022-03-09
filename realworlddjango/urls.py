@@ -23,7 +23,7 @@ urlpatterns = [
 
 urlpatterns += [
     path('events/', include('events.urls')),
-    # path('', include('main.urls')),
+    path('', include('main.urls')),
 ]
 
 urlpatterns += [
