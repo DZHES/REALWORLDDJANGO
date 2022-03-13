@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm, PasswordChangeForm,
                                             SetPasswordForm, PasswordResetForm)
-
+from allauth.account.forms import LoginForm
 from accounts.models import Profile
 from django import forms
 from utils.forms import update_fields_widget # импортируем виджет
@@ -11,11 +11,16 @@ class CustomUserCreationForm(UserCreationForm): #форма для регист�
         super().__init__(*args, **kwargs)
         update_fields_widget(self, ('username', 'password1', 'password2'), 'form-control')
 
-class CustomAuthenticationForm(AuthenticationForm):
+# class CustomAuthenticationForm(AuthenticationForm):
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         update_fields_widget(self, ('username', 'password'), 'form-control')
+class CustomAuthenticationForm(LoginForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        update_fields_widget(self, ('username', 'password'), 'form-control')
+        update_fields_widget(self, ('login', 'password'), 'form-control')
 
 class CustomPasswordChangeForm(PasswordChangeForm):
 

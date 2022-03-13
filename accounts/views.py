@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.models import Profile
 from django.http import HttpResponseRedirect
 from events.models import Review
+from allauth.account.views import LoginView
 
 class RedirectAuthenticatedUserMixin:
     def get(self, *args, **kwargs):
@@ -56,7 +57,11 @@ class CustomSignUpView(RedirectAuthenticatedUserMixin, CreateView):
             login(self.request, user)
         return result
 
-class CustomLoginView(RedirectAuthenticatedUserMixin, auth_views.LoginView):
+# class CustomLoginView(RedirectAuthenticatedUserMixin, auth_views.LoginView):
+#     form_class = CustomAuthenticationForm
+#     template_name = 'accounts/registration/signin.html'
+
+class CustomLoginView(LoginView):
     form_class = CustomAuthenticationForm
     template_name = 'accounts/registration/signin.html'
 
