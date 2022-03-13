@@ -1,0 +1,175 @@
+{% extends "__base.html" %}
+{% load static %}
+{% block title %}Real World Django - Мой профайл{% endblock %}
+{% block content %}
+
+<div class="vertical-layout">
+
+{% include 'snippets/__left_menu.html' %}
+    <!-- End LEFT_MENU -->
+
+    <!-- Start MAIN_CONTAINER -->
+    <div class="rightbar">
+
+        <!-- Start TOP_BAR -->
+        <div class="container-fluid bg-white py-3">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto text-center ms-4">
+                    <h4>Профайл</h4>
+                </div>
+                <div class="col-auto text-center me-4">
+                    <a href="#" class="btn btn-outline-primary">+ Добавить событие</a>
+                </div>
+            </div>
+        </div>
+        <!-- End TOP_BAR -->
+
+        <!-- Start CONTAINER_BAR -->
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <div class="col">
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+                            <img src="{% static "images/users/profile.svg" %}" class="img-fluid" alt="profile"
+                                 style="width: 250px">
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Основная информация</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="." method="post" enctype="multipart/form-data">
+                                <div class="mb-3 text-start">
+                                    <label for="formFile" class="form-label">Загрузить аватар</label>
+                                    <input class="form-control" type="file" id="formFile">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="id_email">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="id_username">
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Сохранить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Мои события</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Событие</th>
+                                        <th scope="col">Дата старта</th>
+                                        <th scope="col">Моя оценка</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>
+                                            <a href="event_detail.html" data-test="event">
+                                                Шоу "Big Stand Up"
+                                            </a>
+                                        </td>
+                                        <td data-test="event_start">01.01.2001</td>
+                                        <td data-test="event_rate">5</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>
+                                            <a href="event_detail.html" data-test="event">
+                                                Субботник "Под крышей дома моего"
+                                            </a>
+                                        </td>
+                                        <td data-test="event_start">01.02.2001</td>
+                                        <td data-test="event_rate">--</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">3</th>
+                                        <td>
+                                            <a href="event_detail.html" data-test="event">
+                                                Волонтерский проект "Delivery-бабушка"
+                                            </a>
+                                        </td>
+                                        <td data-test="event_start">01.03.2001</td>
+                                        <td data-test="event_rate">4</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Мои отзывы</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Событие</th>
+                                        <th scope="col">Отзыв</th>
+                                        <th scope="col">Оценка</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>
+                                            <a href="event_detail.html" data-test="review_event">
+                                                Шоу "Big Stand Up"
+                                            </a>
+                                        </td>
+                                        <td data-test="review_text">
+                                            Такое было крутое событие...
+                                        </td>
+                                        <td data-test="review_rate">5</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>
+                                            <a href="event_detail.html" data-test="review_event">
+                                                Волонтерский проект "Delivery-бабушка"
+                                            </a>
+                                        </td>
+                                        <td data-test="review_text">
+                                            Раньше все было как-то...
+                                        </td>
+                                        <td data-test="review_rate">4</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End CONTAINER_BAR -->
+
+        <!-- Start FOOTER -->
+        <div style="height: 70px"></div>
+        <div class="footerbar">
+            <footer class="footer">
+                <p class="mb-0">© Pumpskill. Real World Django</p>
+            </footer>
+        </div>
+        <!-- End FOOTER -->
+
+    </div>
+    <!-- End MAIN_CONTAINER -->
+
+</div>
+{% endblock %}

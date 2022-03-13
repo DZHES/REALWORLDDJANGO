@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import environ
+from django.urls import reverse_lazy
 
 env = environ.Env()
 environ.Env.read_env()
@@ -43,9 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #Project apps
-    'events',
-    'main',
-    'accounts'
+    'events.apps.EventsConfig',
+    'main.apps.MainConfig',
+    'accounts.apps.AccountsConfig'
 ]
 
 MIDDLEWARE = [
@@ -141,3 +142,9 @@ django_heroku.settings(locals())
 MEDIA_ROOT = BASE_DIR / 'media'
 
 MEDIA_URL = '/media/'
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGOUT_REDIRECT_URL = '/'
+
+LOGIN_URL = reverse_lazy('accounts:sign_in')
