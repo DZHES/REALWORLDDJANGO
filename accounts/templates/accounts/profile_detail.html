@@ -12,16 +12,7 @@
     <div class="rightbar">
 
         <!-- Start TOP_BAR -->
-        <div class="container-fluid bg-white py-3">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto text-center ms-4">
-                    <h4>Профайл</h4>
-                </div>
-                <div class="col-auto text-center me-4">
-                    <a href="#" class="btn btn-outline-primary">+ Добавить событие</a>
-                </div>
-            </div>
-        </div>
+   {% include 'snippets/__top_bar.html' %}
         <!-- End TOP_BAR -->
 
         <!-- Start CONTAINER_BAR -->
@@ -40,18 +31,12 @@
                         </div>
                         <div class="card-body">
                             <form action="." method="post" enctype="multipart/form-data">
-                                <div class="mb-3 text-start">
-                                    <label for="formFile" class="form-label">Загрузить аватар</label>
-                                    <input class="form-control" type="file" id="formFile">
-                                </div>
+                                {% csrf_token %}
+                                {% for field in form %}
                                 <div class="mb-3">
-                                    <label for="id_email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="id_email">
+                                    {{ field.label_tag }} {{ field }}
                                 </div>
-                                <div class="mb-3">
-                                    <label for="id_username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="id_username">
-                                </div>
+                                {% endfor %}
                                 <button type="submit" class="btn btn-primary">
                                     Сохранить
                                 </button>
@@ -74,37 +59,25 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    {% for enroll in profile_objects.user.enrolls.all %}
                                     <tr>
-                                        <th scope="row">1</th>
+                                        <th scope="row">{{ forloop.counter }}</th>
                                         <td>
-                                            <a href="event_detail.html" data-test="event">
-                                                Шоу "Big Stand Up"
+                                            <a href="{{ enroll.event.get_absolute_url }}" data-test="event">
+                                                {{ enroll.event }}
                                             </a>
                                         </td>
-                                        <td data-test="event_start">01.01.2001</td>
-                                        <td data-test="event_rate">5</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>
-                                            <a href="event_detail.html" data-test="event">
-                                                Субботник "Под крышей дома моего"
-                                            </a>
-                                        </td>
-                                        <td data-test="event_start">01.02.2001</td>
-                                        <td data-test="event_rate">--</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td>
-                                            <a href="event_detail.html" data-test="event">
-                                                Волонтерский проект "Delivery-бабушка"
-                                            </a>
-                                        </td>
-                                        <td data-test="event_start">01.03.2001</td>
-                                        <td data-test="event_rate">4</td>
+                                        <td data-test="event_start">{{ enroll.event.date_start|date:"d.m.Y" }}</td>
+                                        {% for review in  profile_objects.user.reviews.all %}
+                                            {% if enroll.event in profile_reviews and enroll.event == review.event %}
+                                                <td data-test="event_rate">{{ review.rate|default:"--" }}</td>
+                                            {% elif enroll.event not in profile_reviews and review == profile_objects.user.reviews.all.first %}
+                                                <td data-test="event_rate">{{ '--' }}</td>
+                                            {% endif %}
+                                        {% endfor %}
                                     </tr>
                                     </tbody>
+                                    {% endfor %}
                                 </table>
                             </div>
                         </div>
@@ -125,30 +98,20 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    {% for review in profile_objects.user.reviews.all %}
                                     <tr>
-                                        <th scope="row">1</th>
+                                        <th scope="row">{{ forloop.counter }}</th>
                                         <td>
-                                            <a href="event_detail.html" data-test="review_event">
-                                                Шоу "Big Stand Up"
+                                            <a href="{{review.event.get_absolute_url}}" data-test="review_event">
+                                                {{ review.event }}
                                             </a>
                                         </td>
                                         <td data-test="review_text">
-                                            Такое было крутое событие...
+                                            {{ review.text|truncatewords:4  }}
                                         </td>
-                                        <td data-test="review_rate">5</td>
+                                        <td data-test="review_rate">{{ review.rate }}</td>
                                     </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>
-                                            <a href="event_detail.html" data-test="review_event">
-                                                Волонтерский проект "Delivery-бабушка"
-                                            </a>
-                                        </td>
-                                        <td data-test="review_text">
-                                            Раньше все было как-то...
-                                        </td>
-                                        <td data-test="review_rate">4</td>
-                                    </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -160,12 +123,7 @@
         <!-- End CONTAINER_BAR -->
 
         <!-- Start FOOTER -->
-        <div style="height: 70px"></div>
-        <div class="footerbar">
-            <footer class="footer">
-                <p class="mb-0">© Pumpskill. Real World Django</p>
-            </footer>
-        </div>
+{% include 'snippets/__footer.html' %}
         <!-- End FOOTER -->
 
     </div>

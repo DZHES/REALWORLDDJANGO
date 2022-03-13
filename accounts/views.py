@@ -7,6 +7,13 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.models import Profile
 from django.http import HttpResponseRedirect
+from events.models import Review
+
+class RedirectAuthenticatedUserMixin:
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return HttpResponseRedirect(reverse_lazy('main:index'))
+        return super().get(*args, **kwargs)
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = Profile
@@ -27,7 +34,13 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
             return HttpResponseRedirect(redirect_url)
         return super().get(request, *args, **kwargs)
 
-class CustomSignUpView(CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = Profile.objects.filter(pk=self.kwargs['pk'])
+        context['profile_reviews'] = [review.event for review in Review.objects.all()]
+        return context
+
+class CustomSignUpView(RedirectAuthenticatedUserMixin, CreateView):
     model = User
     template_name = 'accounts/registration/signup.html'
     form_class = CustomUserCreationForm
@@ -42,7 +55,7 @@ class CustomSignUpView(CreateView):
             login(self.request, user)
         return result
 
-class CustomLoginView(auth_views.LoginView):
+class CustomLoginView(RedirectAuthenticatedUserMixin, auth_views.LoginView):
     form_class = CustomAuthenticationForm
     template_name = 'accounts/registration/signin.html'
 
