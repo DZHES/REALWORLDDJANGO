@@ -1,4 +1,6 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm  #базовая форма для регистрации нового пользователя
+from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm, PasswordChangeForm,
+                                            SetPasswordForm, PasswordResetForm)
+
 from accounts.models import Profile
 from django import forms
 from utils.forms import update_fields_widget # импортируем виджет
@@ -25,3 +27,15 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('avatar', )
+
+class CustomPasswordResetForm(PasswordResetForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        update_fields_widget(self, ('email',), 'form-control')
+
+class CustomSetPasswordForm(SetPasswordForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        update_fields_widget(self, ('new_password1', 'new_password2',), 'form-control')

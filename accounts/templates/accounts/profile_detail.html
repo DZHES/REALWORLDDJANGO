@@ -41,6 +41,10 @@
                                     Сохранить
                                 </button>
                             </form>
+                        <div class="my-3">
+                            <a href="{% url 'accounts:password_change' %}" class="btn btn-primary">Изменить пароль</a>
+                            <a href="{% url 'accounts:password_reset' %}" class="btn btn-primary">Сбросить пароль</a>
+                            <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">Выйти</a>
                         </div>
                     </div>
                     <div class="card mt-3">

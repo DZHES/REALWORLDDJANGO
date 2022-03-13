@@ -7,17 +7,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from events.forms import EventCreationForm, EnrollCreationForm, EventUpdateForm
 from django.urls import reverse_lazy
 from django.contrib import messages
-
-class LoginRequiredMixin:
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-                return HttpResponseForbidden('Недостаточно прав')
-        return super().post(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden('Недостаточно прав')
-        return super().get(request, *args, **kwargs)
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class EventListView(ListView):
     model = Event
