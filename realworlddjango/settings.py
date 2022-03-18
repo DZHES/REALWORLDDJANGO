@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'events.apps.EventsConfig',
     'main.apps.MainConfig',
     'accounts.apps.AccountsConfig',
+    'mail.apps.MailConfig'
 ]
 
 MIDDLEWARE = [
