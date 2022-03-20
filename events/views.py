@@ -4,10 +4,11 @@ from events.models import Event, Review, Enroll
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from events.forms import EventCreationForm, EnrollCreationForm, EventUpdateForm
+from events.forms import EventCreationForm, EnrollCreationForm, EventUpdateForm, EventFilterForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count, Sum, Q, Prefetch, F
 
 class EventListView(ListView):
     model = Event
@@ -16,11 +17,35 @@ class EventListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.count_enrolls()
+        form = EventFilterForm(self.request.GET, queryset)
+        if form.is_valid():
+            filter_category = form.cleaned_data['category']
+            filter_features = form.cleaned_data['feature']
+            filter_date_start = form.cleaned_data['date_start']
+            filter_date_end = form.cleaned_data['date_end']
+            filter_is_private = form.cleaned_data['is_private']
+            filter_is_avilable = form.cleaned_data['is_available']
+        if filter_category:
+            queryset = queryset.filter(category=filter_category)
+        if filter_features:
+            for feature in filter_features:
+                queryset = queryset.filter(features__in=[feature])
+        if filter_date_start:
+            queryset = queryset.filter(date_start__gt=filter_date_start)
+        if filter_date_end:
+            queryset = queryset.filter(date_start__lt=filter_date_end)
+        if filter_is_private:
+            queryset = queryset.filter(is_private=filter_is_private)
+        if filter_is_avilable:
+            queryset = queryset.filter(count_left__lt=F('participants_number'))
         return queryset.order_by("-pk")
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['heading'] = 'События'
+        context['filter_form'] = EventFilterForm(self.request.GET)
         return context
 
 class EventDetailView(DetailView):

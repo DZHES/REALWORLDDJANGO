@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.urls import reverse
-
+from events.managers import EventQuerySet
 class Category(models.Model):
     title = models.CharField(max_length=90, default='', verbose_name='Категория')
 
@@ -29,6 +29,7 @@ class Feature(models.Model):
         return self.title
 
 class Event(models.Model):
+    objects = EventQuerySet.as_manager()
     title = models.CharField(max_length=200, default='', verbose_name='Название')
     description = models.TextField(default='', verbose_name='Описание')
     date_start = models.DateTimeField(verbose_name='Дата начала')
