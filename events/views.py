@@ -8,7 +8,7 @@ from events.forms import EventCreationForm, EnrollCreationForm, EventUpdateForm,
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Sum, Q, Prefetch, F
+from django.db.models import Count, Sum, Q, Prefetch, F, Avg, DecimalField
 
 class EventListView(ListView):
     model = Event
@@ -17,7 +17,7 @@ class EventListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.count_enrolls()
+        queryset = queryset.qs1()
         form = EventFilterForm(self.request.GET, queryset)
         if form.is_valid():
             filter_category = form.cleaned_data['category']
@@ -58,6 +58,13 @@ class EventDetailView(DetailView):
         context['enroll_add'] = EnrollCreationForm(initial={'user' : self.request.user, 'event' : self.object,
                                                              'created' : datetime.date.today().strftime('%d.%m.%Y')})
         return context
+
+    def get_queryset(self):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        queryset = super().get_queryset()
+        queryset = queryset.qs2().filter(pk=pk)
+        return queryset
+
 
 class EventCreateView(LoginRequiredMixin, CreateView):
     model = Event
@@ -101,6 +108,14 @@ class EventUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data()
         context['list_review'] = [review.user for review in self.object.reviews.all()]
         return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        enroll = Enroll.objects.annotate(rate=Avg('event__reviews__rate', filter=Q(event__reviews__user=F('user')),
+                                                  output_field=DecimalField()))
+        prefetch_enroll = Prefetch('enrolls', enroll)
+        return queryset.select_related('category').prefetch_related(prefetch_enroll, 'enrolls', 'reviews',
+                                                                    'enrolls__user', 'reviews__user')
 
     def form_valid(self, form):
         messages.success(self.request, f'Событие {form.cleaned_data["title"]} измененно успешно')

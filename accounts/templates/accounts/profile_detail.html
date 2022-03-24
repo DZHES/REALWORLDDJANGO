@@ -1,5 +1,6 @@
 {% extends "__base.html" %}
 {% load static %}
+{% load realdwtags %}
 {% block title %}Real World Django - Мой профайл{% endblock %}
 {% block content %}
 
@@ -72,13 +73,7 @@
                                             </a>
                                         </td>
                                         <td data-test="event_start">{{ enroll.event.date_start|date:"d.m.Y" }}</td>
-                                        {% for review in  profile_objects.user.reviews.all %}
-                                            {% if enroll.event in profile_reviews and enroll.event == review.event %}
-                                                <td data-test="event_rate">{{ review.rate|default:"--" }}</td>
-                                            {% elif enroll.event not in profile_reviews and review == profile_objects.user.reviews.all.first %}
-                                                <td data-test="event_rate">{{ '--' }}</td>
-                                            {% endif %}
-                                        {% endfor %}
+                                        <td data-test="event_rate">{{ enroll.rate|default:0 }}</td>
                                     </tr>
                                     </tbody>
                                     {% endfor %}

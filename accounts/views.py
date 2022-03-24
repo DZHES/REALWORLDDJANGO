@@ -8,8 +8,10 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.models import Profile
 from django.http import HttpResponseRedirect
-from events.models import Review
+from events.models import Review, Enroll
 from allauth.account.views import LoginView
+from django.db.models import Count, Sum, Q, Prefetch, F, Avg, DecimalField
+from django.contrib import messages
 
 class RedirectAuthenticatedUserMixin:
     def get(self, *args, **kwargs):
@@ -27,6 +29,11 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         pk = self.request.user.pk
         self.kwargs['pk'] = pk
         queryset = super().get_queryset().filter(pk=pk)
+        enroll = Enroll.objects.annotate(rate=Avg('event__reviews__rate', filter=Q(event__reviews__user=F('user')),
+                                                  output_field=DecimalField()))
+        prefetch_enroll = Prefetch('user__enrolls', enroll)
+        queryset = queryset.select_related('user').prefetch_related(prefetch_enroll,'user__enrolls__event',
+                                                                    'user__reviews__event', 'user__reviews')
         profile = super().get_object(queryset)
         return profile
 
@@ -38,8 +45,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = Profile.objects.filter(pk=self.kwargs['pk'])
-        context['profile_reviews'] = [review.event for review in Review.objects.all()]
         return context
 
 class CustomSignUpView(RedirectAuthenticatedUserMixin, CreateView):
@@ -49,6 +54,7 @@ class CustomSignUpView(RedirectAuthenticatedUserMixin, CreateView):
     success_url = reverse_lazy('events:event_list')
 
     def form_valid(self, form):
+        messages.success(self.request, 'Данные обновлены')
         result = super().form_valid(form)
         username = form.cleaned_data['username']
         password = form.cleaned_data['password1']

@@ -12,7 +12,7 @@ class Profile(models.Model):
         return self.user.username
 
     def get_absolute_url(self):
-        return reverse('accounts:profile', args=[str(self.pk)])
+        return reverse('accounts:profile')
 
     @property
     def avatar_url(self):

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.urls import reverse
 from events.managers import EventQuerySet
+
 class Category(models.Model):
     title = models.CharField(max_length=90, default='', verbose_name='Категория')
 
