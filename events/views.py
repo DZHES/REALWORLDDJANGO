@@ -21,7 +21,7 @@ class EventListView(ListView):
         form = EventFilterForm(self.request.GET, queryset)
         if form.is_valid():
             filter_category = form.cleaned_data['category']
-            filter_features = form.cleaned_data['feature']
+            filter_features = form.cleaned_data['features']
             filter_date_start = form.cleaned_data['date_start']
             filter_date_end = form.cleaned_data['date_end']
             filter_is_private = form.cleaned_data['is_private']
