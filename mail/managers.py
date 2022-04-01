@@ -5,6 +5,6 @@ from django.db import models
 class SubscriberQuerySet(models.QuerySet):
     def with_counts(self):
         return self.annotate(
-            letter_count=Coalesce(models.Count('letters'), 0),
+            letter_count=Coalesce(models.Count('letters', Q(letters__is_sent=False)), 0),
             sent_letter_count=Coalesce(models.Count('letters', Q(letters__is_sent=True)), 0),
         )
