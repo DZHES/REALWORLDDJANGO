@@ -5,7 +5,9 @@ from mail.models import Subscriber, Letter
 from realworlddjango.settings import EMAIL_HOST_USER
 from django.urls import reverse
 from threading import Thread
+from django.contrib.auth.decorators import login_required
 
+@login_required
 @require_POST
 def create_letters_view(request):
     emails = request.POST.getlist('email', None)
@@ -16,6 +18,7 @@ def create_letters_view(request):
 
     return JsonResponse({'subscribers': Subscriber.get_objects_list()})
 
+@login_required
 @require_POST
 def send_letters(request):
     unsent_letters = Letter.objects.filter(is_sent=False)

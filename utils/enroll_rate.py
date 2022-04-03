@@ -1,4 +1,4 @@
-from events.models import *
+from events.models import Review
 
 def enroll_rate(enroll):
     enrolls = {}
