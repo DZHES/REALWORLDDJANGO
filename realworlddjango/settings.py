@@ -36,3 +36,4 @@ sentry_sdk.init(
     # something more human-readable.
     # release="myapp@1.0.0",
 )
+STATIC_ROOT = BASE_DIR / 'static'
