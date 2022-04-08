@@ -37,3 +37,5 @@ sentry_sdk.init(
     # release="myapp@1.0.0",
 )
 STATIC_ROOT = BASE_DIR / 'static'
+DEBUG = False
+ALLOWED_HOSTS = ['51.250.17.31', 'localhost']
